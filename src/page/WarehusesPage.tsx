@@ -1,6 +1,8 @@
 import { FC } from "react";
 
-export const WarehousesPage: FC = () => {
+
+
+export const WarehousesPage:FC = () => {
   return (
     <div>
       <header>
