@@ -13,7 +13,9 @@ const trackingSlice = createSlice({
     initialState,
     reducers: {
         addTtns(state, action: PayloadAction<string>) {
-            state.list.push(action.payload)
+            if (!state.list.includes(action.payload)) {
+                state.list.push(action.payload);
+            }
         },
         removeTtns(state, _) {
             state.list = []
