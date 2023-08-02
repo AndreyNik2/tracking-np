@@ -7,7 +7,7 @@ export const SharedLayout:FC = () => {
       <>
         <header>
           <nav>
-            <NavLink to='/'>Перевірити ТТН</NavLink>
+            <NavLink to='/tracking'>Перевірити ТТН</NavLink>
             <NavLink to='/warehouses'>Список відділень</NavLink>
           </nav>
             </header>
