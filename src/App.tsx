@@ -13,7 +13,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<SharedLayout />}>
-          <Route path='/tracking' element={<TrackingPage />} />
+          <Route index element={<TrackingPage />} />
           <Route path='/warehouses' element={<WarehousesPage/>} />
         </Route>
       </Routes>
