@@ -15,6 +15,8 @@ import {
   NoWarehouseMessage,
   Title,
   Footer,
+  WarehouseContainer,
+  WarehouseBtn,
 } from "./WarehousesPage.styled";
 
 type CityFormData = {
@@ -95,11 +97,13 @@ export const WarehousesPage: FC = () => {
               ))}
             </LocalityContainer>
           )}
-          {warehouses &&
-            warehouses.length > 0 &&
-            warehouses.map((warehouse) => (
-              <BtnCities type="button">{warehouse.Description}</BtnCities>
-            ))}
+          <WarehouseContainer>
+            {warehouses &&
+              warehouses.length > 0 &&
+              warehouses.map((warehouse) => (
+                <WarehouseBtn type="button">{warehouse.Description}</WarehouseBtn>
+              ))}
+          </WarehouseContainer>
           {warehouses && warehouses.length === 0 && (
             <NoWarehouseMessage>
               В цьому населеному пункті зараз немає відділень нової пошти
