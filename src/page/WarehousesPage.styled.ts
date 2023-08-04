@@ -62,6 +62,24 @@ export const LocalityContainer = styled(Box)`
   }
 `;
 
+export const WarehouseContainer = styled(Box)`
+width: 343px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  @media screen and (min-width: 768px) {
+    width: 700px;
+  }
+  @media screen and (min-width: 1440px) {
+    width: 1000px;
+  }
+`
+
+export const WarehouseBtn = styled(Button)`
+  display: block;
+  margin-top: 5px;
+`;
+
 export const BtnCities = styled(Button)`
   display: block;
   margin-top: 5px;

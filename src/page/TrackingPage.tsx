@@ -1,10 +1,10 @@
 import { FC, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Typography, Container } from "@mui/material";
+import { Typography, Container, TextField } from "@mui/material";
 import { getTrackingDocument } from "../services/api/apiTracking";
 import { ITrackingDocument } from "../models/ITrackingDocument";
 import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
-import { addTtns } from "../redux/trackingSlice";
+import { addTtns, removeTtns } from "../redux/trackingSlice";
 import {
   Btn,
   BtnNumber,
@@ -16,28 +16,38 @@ import {
 } from "./TrackingPage.styled";
 
 type FormData = {
-  ttn: string;
+  number: string;
 };
 
 export const TrackingPage: FC = () => {
-  const { control, handleSubmit, setValue } = useForm<FormData>();
+  const {
+    register,
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<FormData>();
   const [trackInfo, setTrackInfo] = useState<null | ITrackingDocument>(null);
   const dispatch = useAppDispatch();
-  const ttns = useAppSelector((state) => state.ttn.list);
+  const ttns = useAppSelector((state) => state.trackingReducer.list);
 
   const onSubmit = async (data: FormData) => {
-    const result = await getTrackingDocument(data.ttn);
+    const result = await getTrackingDocument(data.number);
     console.log(result);
     if (result) {
       setTrackInfo(result);
-      if (result.success === true && result.data[0].Number) {
+      if (
+        result.success === true &&
+        result.data[0].Number &&
+        result.data[0].Status !== "Номер не найден"
+      ) {
         dispatch(addTtns(result.data[0].Number));
       }
     }
   };
 
   const onButtonClick = async (data: string) => {
-    setValue("ttn", data);
+    setValue("number", data);
     const result = await getTrackingDocument(data);
     console.log(result);
     if (result) {
@@ -48,27 +58,33 @@ export const TrackingPage: FC = () => {
     }
   };
 
+  const onClickRemoveTtns = () => {
+    dispatch(removeTtns(1))
+  }
+
   return (
     <>
       <main>
         <Container sx={{ mt: 1 }}>
           <Title variant="h1">Перевірити ТТН</Title>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Controller
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  size="small"
-                  type="search"
-                  label="Введіть номер ТТН"
-                  required
-                  autoComplete="off"
-                />
-              )}
-              name="ttn"
-              control={control}
-              defaultValue=""
+            <Input
+              size="small"
+              type="search"
+              label="Введіть номер ТТН"
+              required
+              autoComplete="off"
+              {...register("number", {
+                required: "Ви не ввели номер ТТН",
+                pattern: {
+                  value: /^[0-9]{14}$/,
+                  message: "ТТН повинна складатись з 14 цифр",
+                },
+              })}
+              error={Boolean(errors.number)}
+              helperText={errors.number?.message}
             />
+
             <Btn type="submit" variant="contained" color="primary">
               Отримати статус ТТН
             </Btn>
@@ -91,11 +107,17 @@ export const TrackingPage: FC = () => {
                   <Typography variant="subtitle2">
                     Відправлено:
                     <Typography variant="body2">
+                      {trackInfo.data[0].CitySender}
+                    </Typography>
+                    <Typography variant="body2">
                       {trackInfo.data[0].WarehouseSender}
                     </Typography>
                   </Typography>
                   <Typography variant="subtitle2">
                     Отримано:
+                    <Typography variant="body2">
+                      {trackInfo.data[0].CityRecipient}
+                    </Typography>
                     <Typography variant="body2">
                       {trackInfo.data[0].WarehouseRecipient}
                     </Typography>
@@ -104,6 +126,11 @@ export const TrackingPage: FC = () => {
               )}
             </ContainerInfo>
             <ContainerInfo>
+              {ttns.length > 0 && (
+                <BtnNumber variant="contained" onClick={onClickRemoveTtns}>
+                  Видалити всі ТТН
+                </BtnNumber>
+              )}
               {ttns.length > 0 &&
                 ttns.map((ttn) => (
                   <BtnNumber
@@ -115,6 +142,14 @@ export const TrackingPage: FC = () => {
                   </BtnNumber>
                 ))}
             </ContainerInfo>
+            {/* {ttns.length > 0 && (
+              <BtnNumber
+                variant="contained"
+                onClick={onClickRemoveTtns}
+              >
+                Видалити всі ТТН
+              </BtnNumber>
+            )} */}
           </FlexContainerInfo>
         </Container>
       </main>

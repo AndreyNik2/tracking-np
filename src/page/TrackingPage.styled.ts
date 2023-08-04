@@ -61,6 +61,7 @@ export const FlexContainerInfo = styled(Box)`
 export const ContainerInfo = styled(Box)`
   width: 313px;
   min-height: 200px;
+  margin-bottom: 30px;
   margin-left: auto;
   margin-right: auto;
   margin-top: 20px;
@@ -68,7 +69,7 @@ export const ContainerInfo = styled(Box)`
   border-radius: 8px;
   border: 1px solid #999999;
   @media screen and (min-width: 768px) {
-    display: inline-flex;
+    display: inline;
     width: calc((100% - 60px/2));
   }
   @media screen and (min-width: 1440px) {
