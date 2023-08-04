@@ -1,14 +1,21 @@
 import { FC, useEffect, useState } from "react";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { Button, TextField, Typography, Container, Modal } from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
+import { Button, Container, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { getTrackingDocument } from "../services/api/apiTracking";
-import { ITrackingDocument } from "../models/ITrackingDocument";
-import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
-import { addTtns } from "../redux/trackingSlice";
+
 import { ILocality } from "../models/ICitiesOnChange";
 import { getCities, getWarehouses } from "../services/api/apiWarehouses";
 import { IWarehouse } from "../models/IWarehouses";
+import {
+  Btn,
+  BtnCities,
+  Input,
+  LocalityContainer,
+  MainContainer,
+  NoWarehouseMessage,
+  Title,
+  Footer,
+} from "./WarehousesPage.styled";
 
 type CityFormData = {
   city: string;
@@ -21,6 +28,7 @@ export const WarehousesPage: FC = () => {
   const { control, handleSubmit, setValue } = useForm<CityFormData>();
 
   const onSubmit = async (data: CityFormData) => {
+    setWarehouses(null);
     const result = await getCities(data.city);
     if (result && result.success) {
       const successRes = result.data[0].Addresses.filter(
@@ -54,38 +62,60 @@ export const WarehousesPage: FC = () => {
   }, [changedCity]);
 
   return (
-    <main>
-      <h1>Пошук відділення за населеним пунктом</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Controller
-          render={({ field }) => (
-            <TextField
-              {...field}
-              size="small"
-              type="search"
-              label="Введіть назву населенного пункта"
-              required
-              autoComplete="off"
+    <>
+      <main>
+        <MainContainer>
+          <Title>Пошук відділення за населеним пунктом</Title>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Controller
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  size="small"
+                  type="search"
+                  label="Введіть назву населенного пункта"
+                  required
+                  autoComplete="off"
+                />
+              )}
+              name="city"
+              control={control}
+              defaultValue=""
             />
+            <Btn type="submit" variant="contained" color="primary">
+              Знайти населений пункт
+            </Btn>
+          </form>
+          {cityOnChange && (
+            <LocalityContainer>
+              {cityOnChange.map((city) => (
+                <BtnCities onClick={() => onCityPress(city)} type="button">
+                  {city.Present}
+                </BtnCities>
+              ))}
+            </LocalityContainer>
           )}
-          name="city"
-          control={control}
-          defaultValue=""
-        />
-        <Button type="submit" variant="contained" color="primary">
-          Знайти населений пункт
-        </Button>
-      </form>
-      {cityOnChange && (
-        <Box>
-          {cityOnChange.map((city) => (
-            <Button onClick={() => onCityPress(city)} type="button">
-              {city.Present}
-            </Button>
-          ))}
-        </Box>
-      )}
-      {warehouses && warehouses.map(warehouse => <Typography>{warehouse.Description}</Typography>)}
-    </main>
+          {warehouses &&
+            warehouses.length > 0 &&
+            warehouses.map((warehouse) => (
+              <BtnCities type="button">{warehouse.Description}</BtnCities>
+            ))}
+          {warehouses && warehouses.length === 0 && (
+            <NoWarehouseMessage>
+              В цьому населеному пункті зараз немає відділень нової пошти
+            </NoWarehouseMessage>
+          )}
+        </MainContainer>
+      </main>
+      <Footer>
+        <a
+          href="https://github.com/AndreyNik2/tracking-np"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Github
+        </a>
+      </Footer>
+    </>
   );
 };
