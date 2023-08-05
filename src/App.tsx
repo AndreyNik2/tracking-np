@@ -10,7 +10,7 @@ import "@fontsource/roboto/700.css";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/tracking-np">
       <Routes>
         <Route path="/" element={<SharedLayout />}>
           <Route index element={<TrackingPage />} />
